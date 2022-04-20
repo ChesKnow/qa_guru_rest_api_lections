@@ -1,0 +1,14 @@
+package models.lombok;
+
+import lombok.Data;
+
+@Data
+public class getGeneratedTokenDataLombok {
+
+
+    private String token;
+    private String expires;
+    private String status;
+    private String result;
+
+}
