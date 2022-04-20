@@ -3,12 +3,15 @@ package tests;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import models.SetCredentialsData;
+import models.getGeneratedTokenData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static listeners.CustomAllureListener.withCustomTemplates;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class BookStoreTests {
@@ -155,5 +158,33 @@ public class BookStoreTests {
                 .body("status", is("Success"))
                 .body("result", is("User authorized successfully."))
                 .body("token.size()", (greaterThan(10)));
+    }
+
+    @Test
+    void ModelsTest() {
+
+        SetCredentialsData scd = new SetCredentialsData();
+        scd.setUserName("alex");
+        scd.setPassword("asdsad#frew_DFS2");
+
+        getGeneratedTokenData ggtd =
+        given().filter(withCustomTemplates())
+                .contentType(ContentType.JSON)
+                .body(scd)
+                .log().uri()
+                .log().body()
+                .when()
+                .post("/Account/v1/GenerateToken")
+                .then()
+                .log().status()
+                .log().body()
+                .body(matchesJsonSchemaInClasspath("schemas/GenerateToken_response_scheme.json"))
+                .extract().as(getGeneratedTokenData.class);
+
+        assertThat(ggtd.getStatus()).isEqualTo("Success");
+        assertThat(ggtd.getResult()).isEqualTo("User authorized successfully.");
+        assertThat(ggtd.getExpires()).hasSizeGreaterThan(10);
+        assertThat(ggtd.getToken()).hasSizeGreaterThan(10).startsWith("eyJ");
+
     }
 }
