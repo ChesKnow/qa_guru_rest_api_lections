@@ -9,8 +9,9 @@ import static org.hamcrest.Matchers.is;
 public class RegresinTests {
 
     @Test
-    void successfullLogin() {
-        given().body("{\"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\"}").contentType(ContentType.JSON)
+    void successfullRegister() {
+        given().body("{\"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\"}")
+                .contentType(ContentType.JSON)
         .when().post("https://reqres.in/api/login")
                 .then().statusCode(200).body("token", is("QpwL5tke4Pnpja7X4"));
     }
